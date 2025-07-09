@@ -48,12 +48,12 @@
     }
 
     #result {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       margin-top: 20px;
       background: #ffffffcc;
       padding: 16px;
       margin: 20px auto;
-      max-width: 320px;
+      max-width: 340px;
       border-radius: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
@@ -67,13 +67,28 @@
       color: #ef5350;
       font-weight: bold;
     }
+
+    .qr-label {
+      font-weight: bold;
+      color: #7e57c2;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .qr-value {
+      font-size: 1.1rem;
+      word-break: break-word;
+      color: #333;
+    }
   </style>
 </head>
 <body>
   <h1>🌸 QRチェックアプリ 🌸</h1>
   <button id="start-button">📷 スキャンを始める</button>
   <div id="reader"></div>
-  <div id="result">「スキャンを始める」ボタンを押してください</div>
+  <div id="result">
+    「スキャンを始める」ボタンを押してください
+  </div>
 
   <script>
     let firstQR = null;
@@ -118,22 +133,32 @@
       isBlocked = true;
       if (!firstQR) {
         firstQR = qr;
-        resultDiv.innerHTML = "🔍 基準QR読み取り完了。次のQRをスキャンしてください！";
+        resultDiv.innerHTML = `
+          <div class="qr-label">🔑 基準QR：</div>
+          <div class="qr-value">${qr}</div>
+          <div style="margin-top:12px;">次のQRコードをスキャンしてください</div>
+        `;
       } else if (!isComparing) {
         isComparing = true;
-        if (qr === firstQR) {
-          resultDiv.innerHTML = "<span class='success'>✅ 一致しました！</span>";
-          successSound.play();
-        } else {
-          resultDiv.innerHTML = "<span class='fail'>❌ 不一致です…</span>";
-          failSound.play();
-        }
+        const match = qr === firstQR;
+        resultDiv.innerHTML = `
+          <div class="qr-label">🔑 基準QR：</div>
+          <div class="qr-value">${firstQR}</div>
+          <div class="qr-label" style="margin-top:12px;">🔍 照合QR：</div>
+          <div class="qr-value">${qr}</div>
+          <div style="margin-top:16px;" class="${match ? 'success' : 'fail'}">
+            ${match ? '✅ 一致しました！' : '❌ 不一致です…'}
+          </div>
+        `;
+        (match ? successSound : failSound).play();
+
         setTimeout(() => {
           firstQR = null;
-          resultDiv.innerHTML = "📸 もう一度スキャンを行ってください";
           isComparing = false;
+          resultDiv.innerHTML = "📸 もう一度スキャンを行ってください";
         }, 3000);
       }
+
       setTimeout(() => {
         isBlocked = false;
       }, 3000);
@@ -141,3 +166,4 @@
   </script>
 </body>
 </html>
+

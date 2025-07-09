@@ -3,88 +3,141 @@
 <head>
   <meta charset="UTF-8" />
   <title>QRコード照合</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: "Rounded Mplus 1c", "Arial", sans-serif;
+      background: linear-gradient(to bottom, #f6f1f9, #fff);
+      color: #4a4a4a;
       text-align: center;
       padding: 20px;
-      background-color: #f7f7fa;
     }
+
     h1 {
-      color: #5c6bc0;
+      font-size: 2rem;
+      color: #7e57c2;
+      margin-bottom: 10px;
     }
+
     #reader {
-      width: 300px;
-      margin: 0 auto;
-      margin-top: 20px;
+      width: 100%;
+      max-width: 340px;
+      margin: 15px auto;
+      border-radius: 16px;
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
+
+    #start-button {
+      background-color: #ba9ae0;
+      color: white;
+      font-size: 1.3rem;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s ease;
+    }
+
+    #start-button:hover {
+      background-color: #a678d1;
+    }
+
     #result {
-      font-size: 32px;
+      font-size: 1.4rem;
       margin-top: 20px;
+      background: #ffffffcc;
+      padding: 16px;
+      margin: 20px auto;
+      max-width: 320px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+
     .success {
-      color: green;
+      color: #66bb6a;
+      font-weight: bold;
     }
+
     .fail {
-      color: red;
+      color: #ef5350;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>QRコード照合チェック</h1>
+  <h1>🌸 QRチェックアプリ 🌸</h1>
+  <button id="start-button">📷 スキャンを始める</button>
   <div id="reader"></div>
-  <div id="result">QRを2つ読み込んでください</div>
+  <div id="result">「スキャンを始める」ボタンを押してください</div>
 
   <script>
     let firstQR = null;
     let isComparing = false;
+    let isBlocked = false;
 
     const successSound = new Howl({ src: ['https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'] });
     const failSound = new Howl({ src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'] });
 
-    function compareQR(qr) {
+    const resultDiv = document.getElementById("result");
+    const readerDiv = document.getElementById("reader");
+    const startButton = document.getElementById("start-button");
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    startButton.addEventListener("click", async () => {
+      startButton.style.display = "none";
+      readerDiv.style.display = "block";
+      try {
+        const cameras = await Html5Qrcode.getCameras();
+        if (cameras && cameras.length) {
+          await html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            qrCodeMessage => {
+              if (!isBlocked) {
+                handleQR(qrCodeMessage);
+              }
+            },
+            errorMessage => { }
+          );
+        } else {
+          resultDiv.innerText = "カメラが見つかりませんでした 😢";
+        }
+      } catch (err) {
+        resultDiv.innerText = "カメラ起動に失敗しました 😢";
+        console.error(err);
+      }
+    });
+
+    function handleQR(qr) {
+      isBlocked = true;
       if (!firstQR) {
         firstQR = qr;
-        document.getElementById("result").innerHTML = "基準QR読み取り済み。次をスキャンしてください";
+        resultDiv.innerHTML = "🔍 基準QR読み取り完了。次のQRをスキャンしてください！";
       } else if (!isComparing) {
         isComparing = true;
-        const resultDiv = document.getElementById("result");
         if (qr === firstQR) {
-          resultDiv.innerHTML = "<span class='success'>✔ 一致しました！</span>";
+          resultDiv.innerHTML = "<span class='success'>✅ 一致しました！</span>";
           successSound.play();
         } else {
-          resultDiv.innerHTML = "<span class='fail'>✘ 不一致です！</span>";
+          resultDiv.innerHTML = "<span class='fail'>❌ 不一致です…</span>";
           failSound.play();
         }
-        // 3秒後にリセット
         setTimeout(() => {
           firstQR = null;
-          resultDiv.innerHTML = "QRを2つ読み込んでください";
+          resultDiv.innerHTML = "📸 もう一度スキャンを行ってください";
           isComparing = false;
         }, 3000);
       }
+      setTimeout(() => {
+        isBlocked = false;
+      }, 3000);
     }
-
-    const html5QrCode = new Html5Qrcode("reader");
-    Html5Qrcode.getCameras().then(cameras => {
-      if (cameras && cameras.length) {
-        html5QrCode.start(
-          { facingMode: "environment" },
-          {
-            fps: 10,
-            qrbox: 250
-          },
-          qrCodeMessage => {
-            compareQR(qrCodeMessage);
-          },
-          errorMessage => { }
-        ).catch(err => {
-          console.error("カメラ起動失敗:", err);
-        });
-      }
-    });
   </script>
 </body>
 </html>

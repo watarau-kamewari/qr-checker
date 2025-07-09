@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>QRコード照合</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f7f7fa;
+    }
+    h1 {
+      color: #5c6bc0;
+    }
+    #reader {
+      width: 300px;
+      margin: 0 auto;
+      margin-top: 20px;
+    }
+    #result {
+      font-size: 32px;
+      margin-top: 20px;
+    }
+    .success {
+      color: green;
+    }
+    .fail {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>QRコード照合チェック</h1>
+  <div id="reader"></div>
+  <div id="result">QRを2つ読み込んでください</div>
+
+  <script>
+    let firstQR = null;
+    let isComparing = false;
+
+    const successSound = new Howl({ src: ['https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'] });
+    const failSound = new Howl({ src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'] });
+
+    function compareQR(qr) {
+      if (!firstQR) {
+        firstQR = qr;
+        document.getElementById("result").innerHTML = "基準QR読み取り済み。次をスキャンしてください";
+      } else if (!isComparing) {
+        isComparing = true;
+        const resultDiv = document.getElementById("result");
+        if (qr === firstQR) {
+          resultDiv.innerHTML = "<span class='success'>✔ 一致しました！</span>";
+          successSound.play();
+        } else {
+          resultDiv.innerHTML = "<span class='fail'>✘ 不一致です！</span>";
+          failSound.play();
+        }
+        // 3秒後にリセット
+        setTimeout(() => {
+          firstQR = null;
+          resultDiv.innerHTML = "QRを2つ読み込んでください";
+          isComparing = false;
+        }, 3000);
+      }
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: 250
+          },
+          qrCodeMessage => {
+            compareQR(qrCodeMessage);
+          },
+          errorMessage => { }
+        ).catch(err => {
+          console.error("カメラ起動失敗:", err);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

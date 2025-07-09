@@ -13,6 +13,11 @@
       color: #4a4a4a;
       text-align: center;
       padding: 20px;
+      transition: background-color 1.5s ease;
+    }
+
+    body.success-bg {
+      background-color: #e0f8ec !important; /* やさしいグリーン系 */
     }
 
     h1 {
@@ -106,6 +111,7 @@
     const resultDiv = document.getElementById("result");
     const readerDiv = document.getElementById("reader");
     const startButton = document.getElementById("start-button");
+    const body = document.body;
 
     const html5QrCode = new Html5Qrcode("reader");
 
@@ -157,6 +163,14 @@
           </div>
         `;
         (match ? successSound : failSound).play();
+
+        // 🎨 背景色アニメーション（成功時のみ）
+        if (match) {
+          body.classList.add("success-bg");
+          setTimeout(() => {
+            body.classList.remove("success-bg");
+          }, 3000);
+        }
 
         setTimeout(() => {
           firstQR = null;

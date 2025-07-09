@@ -95,8 +95,13 @@
     let isComparing = false;
     let isBlocked = false;
 
-    const successSound = new Howl({ src: ['https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'] });
-    const failSound = new Howl({ src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'] });
+    const successSound = new Howl({
+      src: ['https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg']
+    });
+
+    const failSound = new Howl({
+      src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg']
+    });
 
     const resultDiv = document.getElementById("result");
     const readerDiv = document.getElementById("reader");
@@ -118,7 +123,7 @@
                 handleQR(qrCodeMessage);
               }
             },
-            errorMessage => { }
+            errorMessage => { /* 無視 */ }
           );
         } else {
           resultDiv.innerText = "カメラが見つかりませんでした 😢";
@@ -131,6 +136,7 @@
 
     function handleQR(qr) {
       isBlocked = true;
+
       if (!firstQR) {
         firstQR = qr;
         resultDiv.innerHTML = `

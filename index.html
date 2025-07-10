@@ -122,15 +122,16 @@
 
         // Google Apps Script にログを送信
         fetch("https://script.google.com/macros/s/AKfycbx8BUF7zeemey4TvFFRwP5XrJMxBx62IhqiPysgSxqAFeG1IvbqQpud1PcpU1q8USTP3g/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            device: navigator.userAgent || "不明な端末",
-            baseQR: firstQR,
-            scanQR: qr,
-            result: match ? "一致" : "不一致"
-          })
-        });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    device: navigator.userAgent || "不明な端末",
+    baseQR: firstQR,
+    scanQR: qr,
+    result: match ? "一致" : "不一致"
+  })
+});
+
 
         setTimeout(() => {
           firstQR = null;

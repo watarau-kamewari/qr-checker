@@ -13,11 +13,29 @@
       color: #4a4a4a;
       text-align: center;
       padding: 20px;
-      transition: background-color 1.5s ease;
+      transition: background 1.5s ease;
     }
 
+    /* 🌈 一致時の虹グラデーション */
     body.success-bg {
-      background-color: #e0f8ec !important; /* やさしいグリーン系 */
+      background: linear-gradient(45deg,
+        #f8b195,
+        #f67280,
+        #c06c84,
+        #6c5b7b,
+        #355c7d,
+        #6ab3f7,
+        #a8e6cf,
+        #dcedc1,
+        #ffd3b6
+      );
+      background-size: 300% 300%;
+      animation: rainbow 3s ease forwards;
+    }
+
+    @keyframes rainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     h1 {
@@ -100,10 +118,10 @@
     let isComparing = false;
     let isBlocked = false;
 
+    // ✅ 成功音（GitHubに success.mp3 をアップ）
     const successSound = new Howl({
-  src: ['success.mp3']
-});
-
+      src: ['success.mp3']
+    });
 
     const failSound = new Howl({
       src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg']
@@ -130,7 +148,7 @@
                 handleQR(qrCodeMessage);
               }
             },
-            errorMessage => { /* 無視 */ }
+            errorMessage => { /* 無視OK */ }
           );
         } else {
           resultDiv.innerText = "カメラが見つかりませんでした 😢";
@@ -165,7 +183,6 @@
         `;
         (match ? successSound : failSound).play();
 
-        // 🎨 背景色アニメーション（成功時のみ）
         if (match) {
           body.classList.add("success-bg");
           setTimeout(() => {

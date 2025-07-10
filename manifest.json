@@ -1,6 +1,6 @@
 {
-  "name": "QRチェックアプリ",
-  "short_name": "QRチェック",
+  "name": "QR照合確認",
+  "short_name": "QR照合確認",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f6f1f9",

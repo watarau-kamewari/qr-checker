@@ -1,11 +1,10 @@
-
 {
-  "name": "QR照合確認",
+  "name": "QRコード照合アプリ",
   "short_name": "QR照合",
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f1f9",
-  "theme_color": "#ba9ae0",
+  "background_color": "#ffffff",
+  "theme_color": "#7e57c2",
   "icons": [
     {
       "src": "icon-192.png",

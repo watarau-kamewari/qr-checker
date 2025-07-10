@@ -1,20 +1,11 @@
-
-self.addEventListener('install', function(e) {
-  e.waitUntil(
-    caches.open('qr-app').then(function(cache) {
-      return cache.addAll([
-        './',
-        './index.html',
-        './manifest.json',
-        './success.mp3'
-      ]);
-    })
-  );
+self.addEventListener('install', event => {
+  self.skipWaiting();
 });
-self.addEventListener('fetch', function(e) {
-  e.respondWith(
-    caches.match(e.request).then(function(response) {
-      return response || fetch(e.request);
-    })
-  );
+
+self.addEventListener('activate', event => {
+  clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  event.respondWith(fetch(event.request));
 });

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>QR照合確認</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
   <style>
@@ -57,6 +58,7 @@
   <button id="start-button">📷 スキャンを始める</button>
   <div id="reader"></div>
   <div id="result">「スキャンを始める」ボタンを押してください</div>
+
   <script>
     let firstQR = null;
     let isComparing = false;
@@ -120,17 +122,15 @@
 
         // Google Apps Script にログを送信
         fetch("https://script.google.com/macros/s/AKfycbx8BUF7zeemey4TvFFRwP5XrJMxBx62IhqiPysgSxqAFeG1IvbqQpud1PcpU1q8USTP3g/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    device: navigator.userAgent || "不明な端末",
-    baseQR: firstQR,
-    scanQR: qr,
-    result: match ? "一致" : "不一致"
-  })
-});
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            device: navigator.userAgent || "不明な端末",
+            baseQR: firstQR,
+            scanQR: qr,
+            result: match ? "一致" : "不一致"
+          })
+        });
 
         setTimeout(() => {
           firstQR = null;
@@ -140,6 +140,15 @@
       }
 
       setTimeout(() => { isBlocked = false; }, 3000);
+    }
+  </script>
+
+  <!-- ✅ Service Worker 登録 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.error('Service Worker registration failed:', err));
     }
   </script>
 </body>

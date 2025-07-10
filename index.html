@@ -109,7 +109,8 @@
     const html5QrCode = new Html5Qrcode("reader");
 
     function sendToSheet(device, baseQR, scanQR, result) {
-      fetch("https://script.google.com/macros/s/AKfycbz5_dAsKRAQeUJ4sBlZLUDckg6LBC8U-kTckALN4xato85_AGEJKrCSrG_3ArjTHxaJ_g/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbzbfIkvWnXpvDGMUVxEjiVnUHsjIM1q9COIv0if2nj1lJ45h3M_gMW2CVIxANPnMh7WvQ/exec", {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ device, baseQR, scanQR, result }),
